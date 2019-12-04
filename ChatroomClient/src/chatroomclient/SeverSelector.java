@@ -42,6 +42,7 @@ public class SeverSelector extends javax.swing.JFrame {
         jTextField2 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Ouellette ChatSerivce");
         setAlwaysOnTop(true);
         setResizable(false);
 
