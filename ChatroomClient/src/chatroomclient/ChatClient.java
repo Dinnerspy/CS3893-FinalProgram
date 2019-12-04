@@ -25,7 +25,8 @@ public class ChatClient extends javax.swing.JFrame {
     PrintWriter out;
     SeverSelector serverpicker;
     Login loginframe;
-  ExecutorService ClientRunner ; 
+    ExecutorService ClientRunner;
+
     /**
      * Creates new form ChatClient
      *
@@ -42,7 +43,7 @@ public class ChatClient extends javax.swing.JFrame {
         this.loginframe = loginframe;
         in = new Scanner(this.socket.getInputStream());
         out = new PrintWriter(this.socket.getOutputStream(), true);
-         ClientRunner.execute(new clientInputRunner(in,jTextArea1 ));
+        ClientRunner.execute(new clientInputRunner(in, jTextArea1));
         this.setVisible(true);
     }
 
@@ -139,16 +140,19 @@ public class ChatClient extends javax.swing.JFrame {
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
         //logout
-        out.println("CLIENTLOGOUT:");
+
         try {
+            out.println("CLIENTLOGOUT:");
             socket.close();
+            this.setVisible(false);
+            serverpicker.setVisible(true);
+            loginframe.dispose();
+            
+            this.dispose();
+
         } catch (IOException ex) {
             Logger.getLogger(ChatClient.class.getName()).log(Level.SEVERE, null, ex);
         }
-        serverpicker.setVisible(true);
-        this.setVisible(false);
-        loginframe.dispose();
-        this.dispose();
 
     }//GEN-LAST:event_jButton2MouseClicked
     private void run() throws IOException {

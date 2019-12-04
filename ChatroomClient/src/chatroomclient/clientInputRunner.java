@@ -31,8 +31,8 @@ public class clientInputRunner implements Runnable {
                 jTextArea1.append(line+"\n");
             }
         } finally {
-
-            System.out.println("Major error has happened");
+            
+            System.out.println("Thread closed");
         }
     }
 

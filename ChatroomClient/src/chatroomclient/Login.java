@@ -36,7 +36,7 @@ public class Login extends javax.swing.JFrame {
         initComponents();
 
         this.socket = socket;
-
+        this.serverpicker = serverpicker;
         in = new Scanner(this.socket.getInputStream());
         out = new PrintWriter(this.socket.getOutputStream(), true);
         this.setVisible(true);
