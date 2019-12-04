@@ -56,6 +56,12 @@ public class ServerClientRunner implements Runnable {
 
                         break;
                     } else {
+                        
+                        if(UserList.contains(request[1])){
+                        
+                         out.println("LOGINREQUEST:USERERROR");
+                        System.out.println(ClientSocket.getRemoteSocketAddress().toString().replaceFirst(":\\d*", "") + " LOGINREQUEST:USERERROR");
+                        }
                         out.println("LOGINREQUEST:REJECTED");
                         System.out.println(ClientSocket.getRemoteSocketAddress().toString().replaceFirst(":\\d*", "") + " LOGINREQUEST:REJECTED");
                     }
