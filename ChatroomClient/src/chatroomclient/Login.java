@@ -8,6 +8,9 @@ package chatroomclient;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -149,47 +152,75 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-        String responce;
-        //login
-        out.println("LOGINREQUEST:" + jTextPane1.getText() + ":" + String.valueOf(jPasswordField1.getPassword()));
-        responce = in.nextLine();
-        if (responce.matches("LOGINREQUEST:ACCEPTED")) {
-            try {
-                
-                this.setVisible(false);
-                JFrame newclient = new ChatClient(socket, serverpicker, this);
-                
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(null, "Lost connection is the server still runing?", "Error", JOptionPane.INFORMATION_MESSAGE);
-                Logger.getLogger(SeverSelector.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
+        //Login process
+        try {
+            String responce;
+            //Hashes user pass word using SHA-256 with added "salt"
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            String SaltedPassword = "salt" + String.valueOf(jPasswordField1.getPassword()) + "sedlofbfelqofgru0";
+            byte[] encodedhash = digest.digest(SaltedPassword.getBytes(StandardCharsets.UTF_8));
+            //Sends login request to server
+            out.println("LOGINREQUEST:" + jTextPane1.getText() + ":" + byteArrayToHex(encodedhash));
+            responce = in.nextLine();
+            if (responce.matches("LOGINREQUEST:ACCEPTED")) {
+                try {
 
-            JOptionPane.showMessageDialog(null, "Username or password is invalid!", "Error", JOptionPane.INFORMATION_MESSAGE);
+                    this.setVisible(false);
+                    JFrame newclient = new ChatClient(socket, serverpicker, this);
+
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null, "Lost connection is the server still runing?", "Error", JOptionPane.INFORMATION_MESSAGE);
+                    Logger.getLogger(SeverSelector.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+
+                JOptionPane.showMessageDialog(null, "Username or password is invalid!", "Error", JOptionPane.INFORMATION_MESSAGE);
+            }
+            System.out.println(responce);
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println(responce);
     }//GEN-LAST:event_jButton1MouseClicked
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
-        String responce;
         //register
-        out.println("REGISTERREQUEST:" + jTextPane1.getText() + ":" + String.valueOf(jPasswordField1.getPassword()));
-        responce = in.nextLine();
-  
-        if (responce.matches("LOGINREQUEST:ACCEPTED")) {
-            
-            JOptionPane.showMessageDialog(null, "User has been successfully registered. Now please login", "Success", JOptionPane.INFORMATION_MESSAGE);
-            
-            
-        }else{
-        
-        JOptionPane.showMessageDialog(null, "Username is already taken!", "Error", JOptionPane.INFORMATION_MESSAGE);
+
+        try {
+            String responce;
+            //Hashes user pass word using SHA-256 with added "salt"
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            String SaltedPassword = "salt" + String.valueOf(jPasswordField1.getPassword()) + "sedlofbfelqofgru0";
+            byte[] encodedhash = digest.digest(SaltedPassword.getBytes(StandardCharsets.UTF_8));
+            //Sends register request to server
+            out.println("REGISTERREQUEST:" + jTextPane1.getText() + ":" + byteArrayToHex(encodedhash));
+            responce = in.nextLine();
+
+            if (responce.matches("REGISTERREQUEST:ACCEPTED")) {
+
+                JOptionPane.showMessageDialog(null, "User has been successfully registered. Now please login", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            } else {
+
+                JOptionPane.showMessageDialog(null, "Username is already taken!", "Error", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
 
 
     }//GEN-LAST:event_jButton2MouseClicked
 
+    private static String byteArrayToHex(byte[] hash) {
+        StringBuffer hexString = new StringBuffer();
+        for (int i = 0; i < hash.length; i++) {
+            String hexAsString = Integer.toHexString(0xff & hash[i]);
+            if (hexAsString.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hexAsString);
+        }
+        return hexString.toString();
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
