@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package chatroomserver;
 
 import java.io.IOException;
@@ -43,22 +38,20 @@ public class ServerClientRunner implements Runnable {
             while (true) {
 
                 temp = in.nextLine();
-                //System.out.println("Address " + ClientSocket.getRemoteSocketAddress().toString().replaceFirst(":\\d*", "") + temp);
 
                 String[] request = temp.split(":");
-                System.out.println(request[1] + " " + request[2]);
                 //user is attempint to login
                 if (temp.contains("LOGINREQUEST")) {
 
                     if (userLoginChecker(request[1], request[2])) {
                         out.println("LOGINREQUEST:ACCEPTED");
                         UserName = request[1];
-                        System.out.println(ClientSocket.getRemoteSocketAddress().toString().replaceFirst(":\\d*", "") + "LOGINREQUEST:ACCEPTED");
-                        
+                        System.out.println(ClientSocket.getRemoteSocketAddress().toString().replaceFirst(":\\d*", "") + " LOGINREQUEST:ACCEPTED");
+
                         break;
                     } else {
                         out.println("LOGINREQUEST:REJECTED");
-                        System.out.println(ClientSocket.getRemoteSocketAddress().toString().replaceFirst(":\\d*", "") + "LOGINREQUEST:REJECTED");
+                        System.out.println(ClientSocket.getRemoteSocketAddress().toString().replaceFirst(":\\d*", "") + " LOGINREQUEST:REJECTED");
                     }
 
                 } else if (temp.contains("REGISTERREQUEST")) {
@@ -66,34 +59,35 @@ public class ServerClientRunner implements Runnable {
                     if (userRegisterChecker(request[1], request[2])) {
 
                         out.println("REGISTERREQUEST:ACCEPTED");
-                        System.out.println(ClientSocket.getRemoteSocketAddress().toString().replaceFirst(":\\d*", "") + "REGISTERREQUEST:ACCEPTED");
+                        System.out.println(ClientSocket.getRemoteSocketAddress().toString().replaceFirst(":\\d*", "") + " REGISTERREQUEST:ACCEPTED");
 
                     } else {
                         out.println("REGISTERREQUEST:REJECTED");
-                        System.out.println(ClientSocket.getRemoteSocketAddress().toString().replaceFirst(":\\d*", "") + "REGISTERREQUEST:REJECTED");
+                        System.out.println(ClientSocket.getRemoteSocketAddress().toString().replaceFirst(":\\d*", "") + " REGISTERREQUEST:REJECTED");
 
                     }
                 } else {
 
                     out.println("Error:Error");
-                    System.out.println(ClientSocket.getRemoteSocketAddress().toString().replaceFirst(":\\d*", "") + "Error:Error");
+                    System.out.println(ClientSocket.getRemoteSocketAddress().toString().replaceFirst(":\\d*", "") + " Error:Error");
                 }
-               
-            } Date now = new java.util.Date();
-                Timestamp current = new java.sql.Timestamp(now.getTime());
-                String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(current);
-            for (PrintWriter writer : outputList) {
-                writer.println(UserName + " has joined!");
+
             }
-            out.println("[" + timeStamp + "] " +UserName + " has joined!");
+            Date now = new java.util.Date();
+            Timestamp current = new java.sql.Timestamp(now.getTime());
+            String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(current);
+            for (PrintWriter writer : outputList) {
+                writer.println("[" + timeStamp + "] " + UserName + " has joined!");
+            }
+            out.println("[" + timeStamp + "] " + UserName + " has joined!");
             outputList.add(out);
             while (true) {
-                
+
                 String input = in.nextLine();
                 if (input.startsWith("CLIENTLOGOUT:")) {
-
+                    System.out.println("[" + timeStamp + "] " + UserName + " has left!");
                     for (PrintWriter writer : outputList) {
-                        writer.println("[" + timeStamp + "] " +UserName + " has left!");
+                        writer.println("[" + timeStamp + "] " + UserName + " has left!");
                     }
                     return;
 
@@ -105,7 +99,7 @@ public class ServerClientRunner implements Runnable {
                 System.out.println("[" + timeStamp + "]" + UserName + ClientSocket.getRemoteSocketAddress().toString().replaceFirst(":\\d*", "") + ": " + input);
 
                 for (PrintWriter writer : outputList) {
-                    writer.println("[" + timeStamp + "] " +UserName + ": " + input);
+                    writer.println("[" + timeStamp + "] " + UserName + ": " + input);
                 }
             }
 
@@ -119,7 +113,7 @@ public class ServerClientRunner implements Runnable {
 
         if (UserDB.containsKey(username)) {
 
-            if (UserDB.get(username).matches(password)) {
+            if (UserDB.get(username).contentEquals(password)) {
 
                 return true;
             }
