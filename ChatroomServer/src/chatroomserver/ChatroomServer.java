@@ -20,6 +20,7 @@ public class ChatroomServer {
 
     static HashMap<String, String> UserDB = new HashMap<String, String>();
     static Set<PrintWriter> outputList = new HashSet<>();
+    static Set<String> UserList = new HashSet<>();
     /**
      * @param args the command line arguments
      * @throws java.io.IOException
@@ -53,7 +54,7 @@ public class ChatroomServer {
             while (true) {
                 client = server.accept();
                 System.out.println("Client connected from ip address:" + client.getRemoteSocketAddress().toString().replaceFirst(":\\d*", "") + "port: 1998");
-                ClientPool.execute(new ServerClientRunner(client,UserDB,outputList ));
+                ClientPool.execute(new ServerClientRunner(client,UserDB,outputList ,UserList));
             }
         } catch (IOException i) {
             System.out.println(i);

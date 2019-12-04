@@ -6,6 +6,8 @@ import java.util.Scanner;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.io.FileWriter;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Set;
 import java.sql.Timestamp;
@@ -16,25 +18,28 @@ import java.text.SimpleDateFormat;
  * @author Nicho
  */
 public class ServerClientRunner implements Runnable {
-
+   
+    
     Socket ClientSocket;
     Scanner in;
     PrintWriter out;
     HashMap<String, String> UserDB;
     String temp, UserName;
     Set<PrintWriter> outputList;
+    Set<String> UserList;
 
-    public ServerClientRunner(Socket user, HashMap<String, String> UserDB, Set<PrintWriter> outputList) {
+    public ServerClientRunner(Socket user, HashMap<String, String> UserDB, Set<PrintWriter> outputList,Set<String> UserList ) {
         this.ClientSocket = user;
         this.UserDB = UserDB;
         this.outputList = outputList;
-    }
+        this.UserList = UserList;
+    } 
 
     @Override
     public void run() {
         try {
-            in = new Scanner(ClientSocket.getInputStream());
-            out = new PrintWriter(ClientSocket.getOutputStream(), true);
+            in = new Scanner(ClientSocket.getInputStream(),"UTF-8");
+            out = new PrintWriter(new OutputStreamWriter( ClientSocket.getOutputStream(), StandardCharsets.UTF_8), true);
             while (true) {
 
                 temp = in.nextLine();
@@ -43,9 +48,10 @@ public class ServerClientRunner implements Runnable {
                 //user is attempint to login
                 if (temp.contains("LOGINREQUEST")) {
 
-                    if (userLoginChecker(request[1], request[2])) {
+                    if (userLoginChecker(request[1], request[2]) && !UserList.contains(request[1])) {
                         out.println("LOGINREQUEST:ACCEPTED");
                         UserName = request[1];
+                        UserList.add(UserName);
                         System.out.println(ClientSocket.getRemoteSocketAddress().toString().replaceFirst(":\\d*", "") + " LOGINREQUEST:ACCEPTED");
 
                         break;
@@ -76,9 +82,12 @@ public class ServerClientRunner implements Runnable {
             Date now = new java.util.Date();
             Timestamp current = new java.sql.Timestamp(now.getTime());
             String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(current);
+            String CurrentUsers = UserList.toString();
             for (PrintWriter writer : outputList) {
+                writer.println("CURRENTUSERS:"+UserList);
                 writer.println("[" + timeStamp + "] " + UserName + " has joined!");
             }
+            out.println("CURRENTUSERS:"+UserList);
             out.println("[" + timeStamp + "] " + UserName + " has joined!");
             outputList.add(out);
             while (true) {
@@ -86,7 +95,9 @@ public class ServerClientRunner implements Runnable {
                 String input = in.nextLine();
                 if (input.startsWith("CLIENTLOGOUT:")) {
                     System.out.println("[" + timeStamp + "] " + UserName + " has left!");
+                    UserList.remove(UserName);
                     for (PrintWriter writer : outputList) {
+                        writer.println("CURRENTUSERS:"+UserList);
                         writer.println("[" + timeStamp + "] " + UserName + " has left!");
                     }
                     return;
