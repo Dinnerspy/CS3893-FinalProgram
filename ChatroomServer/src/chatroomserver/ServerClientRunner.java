@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat;
 
 /**
  *
- * @author Nicho
+ * @author Nicholas Ouellette #3556762
  */
 public class ServerClientRunner implements Runnable {
    
