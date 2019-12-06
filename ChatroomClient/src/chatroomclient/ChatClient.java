@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Nicho
+ * @author Nicholas Ouellette #3556762
  */
 public class ChatClient extends javax.swing.JFrame {
 

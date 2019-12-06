@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package chatroomclient;
 
 import java.io.IOException;
@@ -41,16 +36,12 @@ public class Login extends javax.swing.JFrame {
 
         this.socket = socket;
         this.serverpicker = serverpicker;
-        in = new Scanner(this.socket.getInputStream(),"UTF-8");
-        out = new PrintWriter(new OutputStreamWriter( socket.getOutputStream(), StandardCharsets.UTF_8), true);
+        in = new Scanner(this.socket.getInputStream(), "UTF-8");
+        out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);
         this.setVisible(true);
 
     }
 
-//    public Login() {
-//        initComponents();
-//
-//    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -152,67 +143,75 @@ public class Login extends javax.swing.JFrame {
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
         //Login process
-        try {
-            String responce;
-            //Hashes user pass word using SHA-256 with added "salt"
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            String SaltedPassword = "salt" + String.valueOf(jPasswordField1.getPassword()) + "sedlofbfelqofgru0";
-            byte[] encodedhash = digest.digest(SaltedPassword.getBytes(StandardCharsets.UTF_8));
-            //Sends login request to server
-            out.println("LOGINREQUEST:" + jTextField1.getText() + ":" + byteArrayToHex(encodedhash));
-            responce = in.nextLine();
-            if (responce.matches("LOGINREQUEST:ACCEPTED")) {
-                try {
+        if (jPasswordField1.getPassword().length != 0 && !jTextField1.getText().isEmpty()) {
+            try {
+                String responce;
+                //Hashes user pass word using SHA-256 with added "salt"
+                MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                String SaltedPassword = "salt" + String.valueOf(jPasswordField1.getPassword()) + "sedlofbfelqofgru0";
+                byte[] encodedhash = digest.digest(SaltedPassword.getBytes(StandardCharsets.UTF_8));
+                //Sends login request to server
+                out.println("LOGINREQUEST:" + jTextField1.getText() + ":" + byteArrayToHex(encodedhash));
+                responce = in.nextLine();
+                if (responce.matches("LOGINREQUEST:ACCEPTED")) {
+                    try {
 
-                    this.setVisible(false);
-                    JFrame newclient = new ChatClient(socket, serverpicker, this);
+                        this.setVisible(false);
+                        JFrame newclient = new ChatClient(socket, serverpicker, this);
 
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(null, "Lost connection is the server still runing?", "Error", JOptionPane.INFORMATION_MESSAGE);
-                    Logger.getLogger(SeverSelector.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(null, "Lost connection is the server still runing?", "Error", JOptionPane.INFORMATION_MESSAGE);
+                        Logger.getLogger(SeverSelector.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+
+                    JOptionPane.showMessageDialog(null, "Username or password is invalid!", "Error", JOptionPane.INFORMATION_MESSAGE);
                 }
-            } else {
-
-                JOptionPane.showMessageDialog(null, "Username or password is invalid!", "Error", JOptionPane.INFORMATION_MESSAGE);
+                System.out.println(responce);
+            } catch (NoSuchAlgorithmException ex) {
+                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
             }
-            System.out.println(responce);
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+
+        } else {
+
+            JOptionPane.showMessageDialog(null, "Make sure all feilds have text in them", "Error", JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_jButton1MouseClicked
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
         //register
+        if (jPasswordField1.getPassword().length != 0 && !jTextField1.getText().isEmpty()) {
+            try {
+                String responce;
+                //Hashes user pass word using SHA-256 with added "salt"
+                MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                String SaltedPassword = "salt" + String.valueOf(jPasswordField1.getPassword()) + "sedlofbfelqofgru0";
+                byte[] encodedhash = digest.digest(SaltedPassword.getBytes(StandardCharsets.UTF_8));
+                //Sends register request to server
+                out.println("REGISTERREQUEST:" + jTextField1.getText() + ":" + byteArrayToHex(encodedhash));
+                responce = in.nextLine();
 
-        try {
-            String responce;
-            //Hashes user pass word using SHA-256 with added "salt"
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            String SaltedPassword = "salt" + String.valueOf(jPasswordField1.getPassword()) + "sedlofbfelqofgru0";
-            byte[] encodedhash = digest.digest(SaltedPassword.getBytes(StandardCharsets.UTF_8));
-            //Sends register request to server
-            out.println("REGISTERREQUEST:" + jTextField1.getText() + ":" + byteArrayToHex(encodedhash));
-            responce = in.nextLine();
+                if (responce.matches("REGISTERREQUEST:ACCEPTED")) {
 
-            if (responce.matches("REGISTERREQUEST:ACCEPTED")) {
+                    JOptionPane.showMessageDialog(null, "User has been successfully registered. Now please login", "Success", JOptionPane.INFORMATION_MESSAGE);
 
-                JOptionPane.showMessageDialog(null, "User has been successfully registered. Now please login", "Success", JOptionPane.INFORMATION_MESSAGE);
+                } else {
 
-            } else {
-                
-                if(responce.matches("LOGINREQUEST:USERERROR")){
-                
-                JOptionPane.showMessageDialog(null, "User is all ready loged in! Please log out of other client.", "Error", JOptionPane.INFORMATION_MESSAGE);
-                
+                    if (responce.matches("LOGINREQUEST:USERERROR")) {
+
+                        JOptionPane.showMessageDialog(null, "User is all ready loged in! Please log out of other client.", "Error", JOptionPane.INFORMATION_MESSAGE);
+
+                    }
+
+                    JOptionPane.showMessageDialog(null, "Username is already taken!", "Error", JOptionPane.INFORMATION_MESSAGE);
                 }
-
-                JOptionPane.showMessageDialog(null, "Username is already taken!", "Error", JOptionPane.INFORMATION_MESSAGE);
+            } catch (NoSuchAlgorithmException ex) {
+                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
+        } else {
 
+            JOptionPane.showMessageDialog(null, "Make sure all feilds have text in them", "Error", JOptionPane.INFORMATION_MESSAGE);
+        }
 
 
     }//GEN-LAST:event_jButton2MouseClicked

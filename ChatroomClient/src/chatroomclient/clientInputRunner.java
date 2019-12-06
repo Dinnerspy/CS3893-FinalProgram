@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package chatroomclient;
 
 import java.util.Scanner;
@@ -10,7 +5,7 @@ import javax.swing.JTextArea;
 
 /**
  *
- * @author Nicho
+ * @author Nicholas Ouellette #3556762
  */
 public class clientInputRunner implements Runnable {
 

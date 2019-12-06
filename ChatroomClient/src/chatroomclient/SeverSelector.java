@@ -14,7 +14,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author Nicho
+ * @author Nicholas Ouellette #3556762
  */
 public class SeverSelector extends javax.swing.JFrame {
 
@@ -110,11 +110,13 @@ public class SeverSelector extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+      if(!jTextField2.getText().isEmpty() && !jTextField1.getText().isEmpty()){
+        
         if (!jTextField2.getText().matches("[0-9]+")) {
 
             JOptionPane.showMessageDialog(null, "Only numaric chaters are aloud in a port", "Error", JOptionPane.INFORMATION_MESSAGE);
 
-        } else if (!jTextField2.getText().matches("[0-9]+") || Integer.valueOf(jTextField2.getText()) > 65535 || Integer.valueOf(jTextField2.getText()) < 0) {
+        } else if (!jTextField2.getText().matches("[0-9]+") && Integer.valueOf(jTextField2.getText()) > 65535 && Integer.valueOf(jTextField2.getText()) < 0) {
 
             JOptionPane.showMessageDialog(null, "Port numbers should be within 0 to 65535 enclusive", "Error", JOptionPane.INFORMATION_MESSAGE);
         } else {
@@ -127,6 +129,11 @@ public class SeverSelector extends javax.swing.JFrame {
                 Logger.getLogger(SeverSelector.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        
+      }else{
+      
+      JOptionPane.showMessageDialog(null, "Make sure all feilds have text in them", "Error", JOptionPane.INFORMATION_MESSAGE);
+      }
 
 
 
